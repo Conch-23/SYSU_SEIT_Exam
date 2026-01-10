@@ -1,0 +1,28 @@
+ 		ORG 	0000H
+		LJMP 	START
+		ORG 	0030H
+
+START:	MOV 	P0, #0FFH
+		MOV 	P1, #0EEH
+		
+LOOP:	MOV     P0,#0FFH
+		ACALL	DELAY
+		MOV     P3,#0FFH
+		MOV		A, P3
+		JNB		ACC.2, PRG1
+		
+PRG0:	MOV     P0,#0FFH
+		LJMP 	LOOP
+		
+PRG1:	MOV		P0,#0F0H
+		ACALL	DELAY
+		LJMP 	LOOP
+
+DELAY: 	MOV    R1, #2 
+DEL1:  	MOV    R2, #200
+DEL2:  	MOV    R3, #229
+DEL3:  	DJNZ   R3, DEL3
+       	DJNZ   R2, DEL2
+       	DJNZ   R1, DEL1
+        RET
+		END

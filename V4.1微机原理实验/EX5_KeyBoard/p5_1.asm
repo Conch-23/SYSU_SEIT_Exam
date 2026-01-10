@@ -1,0 +1,73 @@
+;p5_1
+				ORG	0000H
+				LJMP	START
+				ORG	0050H
+START:		MOV	SP,#60H
+				MOV	R5, #16
+				MOV	P1, #0E8H
+				MOV	40H, #00H	
+MAIN: 		MOV	A, R5
+				MOV	DPTR, #TAB2
+				MOVC	A, @A+DPTR
+				MOV	P0, A
+				LCALL	DELAY
+				ACALL	JUDGE
+				JZ		MAIN
+				LCALL	DELAY
+				ACALL	JUDGE
+				JZ		MAIN
+				ACALL	KEY
+				ACALL	NUM
+				LJMP	MAIN
+
+JUDGE:		MOV	P2, #0FH		
+				MOV	A, P2
+				CLR		C
+				SUBB	A, #0FH
+				RET
+
+KEY:		PUSH	ACC
+K_LINE: 	MOV 	P2, #0FH
+				MOV 	A, P2
+				MOV	R1, A 
+K_ROW:		MOV 	P2, #0F0H
+				MOV 	A, P2
+				MOV	R0, A 
+K_VALUE:	MOV 	A, R1
+				ANL 	A, #0FH	
+				MOV 	R1, A
+				MOV 	A, R0
+				ANL 	A, #0F0H 
+				ORL 	A, R1	
+				MOV 	40H, A 
+				POP		ACC
+				RET
+
+NUM:		PUSH	DPL
+				PUSH	DPH
+				PUSH	ACC
+				MOV 	DPTR, #TAB1		
+				MOV	R5, #0FFH	
+NUM0: 		INC		R5
+				MOV 	A, R5
+				MOVC 	A, @A+DPTR
+				CLR		C
+				SUBB	A, 40H
+				JNZ		NUM0	
+NUM1: 		LCALL 	DELAY
+				MOV 	P2, #0FH
+				MOV 	A, P2
+				CJNE 	A, #0FH, NUM1 
+				POP		ACC
+				POP		DPH
+				POP		DPL
+				RET
+
+DELAY: 		MOV 	R7, #20
+DEL1: 		MOV 	R6, #229
+DEL2: 		DJNZ 	R6, DEL2
+				DJNZ 	R7, DEL1
+				RET
+TAB1: 		DB 		0EEH, 0E7H, 0D7H, 0B7H, 0EBH, 0DBH, 0BBH, 0EDH, 0DDH, 0BDH, 77H, 7BH, 7EH, 7DH, 0DEH, 0BEH
+TAB2: 		DB 		0C0H, 0F9H, 0A4H, 0B0H, 99H, 92H, 82H, 0F8H, 80H, 90H, 88H, 83H, 0C6H, 0A1H, 86H, 8EH, 0FFH
+				END
